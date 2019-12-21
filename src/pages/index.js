@@ -2,25 +2,28 @@ import React, { useState, useEffect } from "react"
 import Moment from "react-moment"
 import "./styles.css"
 import Axios from "axios"
-import * as parse from "url-parse"
+import * as Parse from "url-parse"
 
 // local storage keys
 const lsk_config = "lsk_config"
+const isClient = (typeof window !== `undefined`);
 
 const OctoprintStatus = props => {
-  const [config, setConfig] = useState(
-    JSON.parse(localStorage.getItem(lsk_config)) || {
-      server: "",
-      apiKey: "",
-      validated: false,
+  const defaultConfig = {
+    server: "",
+    apiKey: "",
+    validated: false,
+    webcam: {
+      flipped: false,
     }
-  )
+  }
+
+  const [config, setConfig] = useState(!isClient ? defaultConfig : { ...defaultConfig, ...JSON.parse(localStorage.getItem(lsk_config))})
   useEffect(() => {
-    localStorage.setItem(lsk_config, JSON.stringify(config))
-    requestUpdate()
-    setInterval(() => {
+    if (isClient) {
+      localStorage.setItem(lsk_config, JSON.stringify(config))
       requestUpdate()
-    }, 60 * 1000)
+    }
   }, [config])
 
   const [state, setState] = useState({
@@ -36,7 +39,7 @@ const OctoprintStatus = props => {
       return true
     }
     try {
-      const response = await reqGet("/api/settings")
+      await reqGet("/api/settings")
       setConfig({
         ...config,
         validated: true,
@@ -103,53 +106,69 @@ const OctoprintStatus = props => {
     }
   }
 
-  const snapshotUrl = () => {
+  const fixSnapshotUrl = (snapshotUrl) => {
     try {
-      const url = parse(config.server)
-      return `${state.settings.webcam.snapshotUrl.replace("127.0.0.1", url.host)}&timestamp=${new Date().getTime()}`
+      const url = Parse(config.server)
+      return `${snapshotUrl}&timestamp=${new Date().getTime()}`.replace("127.0.0.1", url.host)
     } catch (error) {
       return "https://cataas.com/cat"
     }
+  }
+
+  const handleWebcamFlippedChange = (event) => {
+    setConfig({
+      ...config,
+      webcam: {
+        ...config.webcam,
+        flipped: event.target.checked,
+      }
+    })
   }
 
   return (
     <>
       <div>
         <div>
-          <input
-            onChange={e =>
-              setConfig({
-                ...config,
-                validated: false,
-                server: e.target.value,
-              })
-            }
-            placeholder="e.g. http://octopi.local"
-            defaultValue={config.server}
-            onKeyPress={event => {
-              if (event.key === "Enter") {
-                validateConfig(event)
+          <label>
+            Server
+            <input
+              onChange={e =>
+                setConfig({
+                  ...config,
+                  validated: false,
+                  server: e.target.value,
+                })
               }
-            }}
-          />
+              placeholder="e.g. http://octopi.local"
+              defaultValue={config.server}
+              onKeyPress={event => {
+                if (event.key === "Enter") {
+                  validateConfig(event)
+                }
+              }}
+            />
+          </label>
         </div>
         <div>
-          <input
-            onChange={e =>
-              setConfig({
-                ...config,
-                validated: false,
-                apiKey: e.target.value,
-              })
-            }
-            placeholder="Copy from Octopi (enable CORS)"
-            defaultValue={config.apiKey}
-            onKeyPress={event => {
-              if (event.key === "Enter") {
-                validateConfig(event)
+          <label>
+            API Key
+            <input
+              onChange={e =>
+                setConfig({
+                  ...config,
+                  validated: false,
+                  apiKey: e.target.value,
+                })
               }
-            }}
-          />
+              placeholder="Copy from Octopi (enable CORS)"
+              defaultValue={config.apiKey}
+              onKeyPress={event => {
+                if (event.key === "Enter") {
+                  validateConfig(event)
+                }
+              }}
+            />
+          </label>
         </div>
         <div>
           <input
@@ -180,13 +199,27 @@ const OctoprintStatus = props => {
               hotend {state.printer.temperature.tool0.actual} -> {state.printer.temperature.tool0.target}
             </div>
             <div>
-              bed {state.printer.temperature.bed.actual} -> {state.printer.temperature.bed.target}
+              {state.printer.temperature.bed.actual} -> {state.printer.temperature.bed.target}
             </div>
             <div>
-              <img src={snapshotUrl()} className="img-hor-vert" />
+              <img
+                src={fixSnapshotUrl(state.settings.webcam.snapshotUrl)}
+                className={config.webcam.flipped ? 'img-hor-vert' : ''}
+                />
+              <label>
+                flip?
+                <input
+                  type="checkbox"
+                  checked={config.webcam.flipped}
+                  onChange={handleWebcamFlippedChange}
+                  />
+              </label>
             </div>
           </>
         )}
+      </div>
+      <div>
+        Octostatus - a lightweight octoprint status page
       </div>
     </>
   )
