@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react"
 import Moment from "react-moment"
 import './styles.css'
-
-const _apiKey = "";
-const _server = "";
+import Axios from "axios";
+import * as parse from "url-parse"
 
 // local storage keys
 const lsk_config = "lsk_config";
@@ -11,14 +10,17 @@ const lsk_config = "lsk_config";
 const OctoprintStatus = props => {
   const [config, setConfig] = useState(
     JSON.parse(localStorage.getItem(lsk_config)) || {
-      server: _server,
-      apiKey: _apiKey,
+      server: "",
+      apiKey: "",
       validated: false,
     }
   )
   useEffect(() => {
     localStorage.setItem(lsk_config, JSON.stringify(config));
     requestUpdate();
+    setInterval(() => {
+      requestUpdate();
+    }, 60*1000);
   }, [config]);
 
   const [state, setState] = useState({
@@ -28,41 +30,86 @@ const OctoprintStatus = props => {
     settings: {},
   });
 
-
-
   const validateConfig = async (event) => {
-    // TODO implement real check
-    const result = await reqGet("/api/settings")
-    setConfig({
-      ...config,
-      validated: true,
-    })
+    if (config.validated) {
+      console.log("already validated. ignoring this request.");
+      return true;
+    }
+    try {
+      const response = await reqGet("/api/settings");
+      setConfig({
+        ...config,
+        validated: true,
+      })
+      return true;
+    } catch (error) {
+      setConfig({
+        ...config,
+        validated: false,
+      })
+      return false;
+    }
   }
 
   const requestUpdate = async () => {
     if (!config.validated) {
-      console.error("invalid config.");
+      console.error("invalid config. skipping requestUpdate().");
       return;
     }
-    const [p, j] = await Promise.all([ reqGet('/api/printer'), reqGet('/api/job')])
+    const [s, p, j] = await Promise.all([reqGet('/api/settings'), reqGet('/api/printer'), reqGet('/api/job')])
     setState({
       ...state,
+      settings: s,
       printer: p,
       job: j,
       lastUpdated: Date.now()
     })
+
+    console.dir(state);
   }
 
-  const reqGet = (path) => {
-    return fetch(`${config.server}${path}`, {
+  const reqGet = async path => {
+    try {
+      const response = await Axios.get(`${config.server}${path}`, {
         method: "get",
+        timeout: 1000,
         headers: {
           "X-Api-Key": config.apiKey,
         },
       })
-      .then(function(response) {
-        return response.json()
-      })
+      return response.data
+    } catch (error) {
+      // Error 😨
+      if (error.response) {
+        /*
+         * The request was made and the server responded with a
+         * status code that falls out of the range of 2xx
+         */
+        console.log(error.response.data)
+        console.log(error.response.status)
+        console.log(error.response.headers)
+      } else if (error.request) {
+        /*
+         * The request was made but no response was received, `error.request`
+         * is an instance of XMLHttpRequest in the browser and an instance
+         * of http.ClientRequest in Node.js
+         */
+        console.log(error.request)
+      } else {
+        // Something happened in setting up the request and triggered an Error
+        console.log("Error", error.message)
+      }
+      console.log(error.config)
+    }
+  }
+
+  const snapshotUrl = () => {
+    try {
+      const url = parse(config.server);
+      return `${state.settings.webcam.snapshotUrl.replace("127.0.0.1", url.host)}&timestamp=${new Date().getTime()}`
+    } catch (error) {
+      return "https://cataas.com/cat"
+    }
   }
 
   return (
@@ -77,6 +124,11 @@ const OctoprintStatus = props => {
               })}
             placeholder="e.g. http://octopi.local"
             defaultValue={config.server}
+            onKeyPress={event => {
+              if (event.key === 'Enter') {
+                validateConfig(event);
+              }
+            }}
             />
         </div>
         <div>
@@ -88,24 +140,33 @@ const OctoprintStatus = props => {
               })}
             placeholder="Copy from Octopi (enable CORS)"
             defaultValue={config.apiKey}
+            onKeyPress={event => {
+              if (event.key === 'Enter') {
+                validateConfig(event);
+              }
+            }}
             />
         </div>
         <div>
           <input
             type="button"
             value="Save"
-            onSubmit={validateConfig}
+            onKeyPress={event => {
+              if (event.key === 'Enter') {
+                validateConfig(event);
+              }
+            }}
             onClick={validateConfig}
             />
         </div>
       </div>
       <div onClick={requestUpdate}>
-        {state.lastUpdated === 0 ? (
-          "not loaded"
+        {state.lastUpdated === 0 || !config.validated ? (
+          "invalid config. please check server and api key"
         ) : (
           <>
             <div>
-              {state.printer.state.text} - {Math.round(state.job.progress.completion)}% ({Math.round(state.job.progress.printTimeLeft / 60)} min) <Moment duration={state.job.progress.printTimeLeft} durationFromNow></Moment>
+              {state.printer.state.text} - {Math.round(state.job.progress.completion)}% finishing <Moment add={{ seconds: state.job.progress.printTimeLeft}} fromNow>{Date()}</Moment>
             </div>
             <div>{state.job.job.file.display}</div>
             <div>
@@ -116,7 +177,7 @@ const OctoprintStatus = props => {
             </div>
             <div>
             <img
-              src={`${config.server}/webcam/?action=snapshot&timestamp=${new Date().getTime()}`}
+              src={snapshotUrl()}
               className="img-hor-vert"
               />
             </div>
