@@ -8,7 +8,7 @@ import * as Parse from "url-parse"
 const lsk_config = "lsk_config"
 const isClient = (typeof window !== `undefined`);
 
-const OctoprintStatus = props => {
+const OctoprintStatus = () => {
   const defaultConfig = {
     server: "",
     apiKey: "",
@@ -22,7 +22,6 @@ const OctoprintStatus = props => {
   useEffect(() => {
     if (isClient) {
       localStorage.setItem(lsk_config, JSON.stringify(config))
-      requestUpdate()
     }
   }, [config])
 
@@ -33,7 +32,7 @@ const OctoprintStatus = props => {
     settings: {},
   })
 
-  const validateConfig = async event => {
+  const validateConfig = async () => {
     if (config.validated) {
       console.log("already validated. ignoring this request.")
       return true
@@ -145,7 +144,7 @@ const OctoprintStatus = props => {
               defaultValue={config.server}
               onKeyPress={event => {
                 if (event.key === "Enter") {
-                  validateConfig(event)
+                  validateConfig()
                 }
               }}
             />
@@ -166,7 +165,7 @@ const OctoprintStatus = props => {
               defaultValue={config.apiKey}
               onKeyPress={event => {
                 if (event.key === "Enter") {
-                  validateConfig(event)
+                  validateConfig()
                 }
               }}
             />
@@ -178,7 +177,7 @@ const OctoprintStatus = props => {
             value="Save"
             onKeyPress={event => {
               if (event.key === "Enter") {
-                validateConfig(event)
+                validateConfig()
               }
             }}
             onClick={validateConfig}
@@ -198,10 +197,10 @@ const OctoprintStatus = props => {
             </div>
             <div>{state.job.job.file.display}</div>
             <div>
-              hotend {state.printer.temperature.tool0.actual} -> {state.printer.temperature.tool0.target}
+              hotend {state.printer.temperature.tool0.actual} -&gt; {state.printer.temperature.tool0.target}
             </div>
             <div>
-              {state.printer.temperature.bed.actual} -> {state.printer.temperature.bed.target}
+              {state.printer.temperature.bed.actual} -&gt; {state.printer.temperature.bed.target}
             </div>
             <div>
               <img
