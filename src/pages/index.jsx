@@ -12,7 +12,6 @@ const OctoprintStatus = () => {
   const defaultConfig = {
     server: "",
     apiKey: "",
-    validated: false,
     webcam: {
       flipped: false,
     }
@@ -30,31 +29,32 @@ const OctoprintStatus = () => {
     printer: {},
     job: {},
     settings: {},
+    configValidated: false,
   })
 
   const validateConfig = async () => {
-    if (config.validated) {
+    if (state.configValidated) {
       console.log("already validated. ignoring this request.")
       return true
     }
     try {
       await reqGet("/api/version")
-      setConfig({
-        ...config,
-        validated: true,
+      setState({
+        ...state,
+        configValidated: true,
       })
       return true
     } catch (error) {
-      setConfig({
+      setState({
         ...config,
-        validated: false,
+        configValidated: false,
       })
       return false
     }
   }
 
   const requestUpdate = async () => {
-    if (!config.validated) {
+    if (!state.configValidated) {
       console.error("invalid config. skipping requestUpdate().")
       return
     }
@@ -110,7 +110,9 @@ const OctoprintStatus = () => {
   const fixSnapshotUrl = (snapshotUrl) => {
     try {
       const url = Parse(config.server)
-      return `${snapshotUrl}&timestamp=${new Date().getTime()}`.replace("127.0.0.1", url.host)
+      return `${snapshotUrl}&timestamp=${new Date().getTime()}`
+        .replace("127.0.0.1", url.host)
+        .replace("localhost", url.host)
     } catch (error) {
       return "https://cataas.com/cat"
     }
@@ -185,7 +187,7 @@ const OctoprintStatus = () => {
         </div>
       </div>
       <div onClick={requestUpdate}>
-        {state.lastUpdated === 0 || !config.validated ? (
+        {state.lastUpdated === 0 || !state.configValidated ? (
           "invalid config. please check server and api key"
         ) : (
           <>
