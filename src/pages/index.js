@@ -39,7 +39,7 @@ const OctoprintStatus = props => {
       return true
     }
     try {
-      await reqGet("/api/settings")
+      await reqGet("/api/version")
       setConfig({
         ...config,
         validated: true,
