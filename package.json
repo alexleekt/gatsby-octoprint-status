@@ -1,18 +1,17 @@
 {
-  "name": "gatsby-starter-hello-world",
+  "name": "gatsby-octoprint-status",
   "private": true,
-  "description": "A simplified bare-bones starter for Gatsby",
+  "description": "Octostatus - a lightweight octoprint status page",
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
     "build": "gatsby build",
-    "deploy-github": "gatsby build && gh-pages -d public",
+    "deploy-github": "gatsby clean && gatsby build && gh-pages -d public",
     "develop": "gatsby develop",
     "format": "prettier --write \"**/*.{js,jsx,json,md}\"",
     "start": "npm run develop",
     "serve": "gatsby serve",
-    "clean": "gatsby clean",
-    "test": "echo \"Write tests! -> https://gatsby.dev/unit-testing\" && exit 1"
+    "clean": "gatsby clean"
   },
   "dependencies": {
     "axios": "^0.19.0",
@@ -29,9 +28,9 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/gatsbyjs/gatsby-starter-hello-world"
+    "url": "https://github.com/alexleekt/gatsby-octoprint-status"
   },
   "bugs": {
-    "url": "https://github.com/gatsbyjs/gatsby/issues"
+    "url": "https://github.com/alexleekt/gatsby-octoprint-status/issues"
   }
 }

@@ -60,13 +60,15 @@ const OctoprintStatus = props => {
       return
     }
     const [s, p, j] = await Promise.all([reqGet("/api/settings"), reqGet("/api/printer"), reqGet("/api/job")])
-    setState({
-      ...state,
-      settings: s,
-      printer: p,
-      job: j,
-      lastUpdated: Date.now(),
-    })
+    if (s && p && j) {
+      setState({
+        ...state,
+        settings: s,
+        printer: p,
+        job: j,
+        lastUpdated: Date.now(),
+      })
+    }
 
     console.dir(state)
   }
