@@ -4,6 +4,7 @@ import "./styles.css"
 import Axios from "axios"
 import Parse from "url-parse"
 import store from "store2"
+import {Helmet} from "react-helmet"
 
 const OctoprintStatus = () => {
   const localStorageKeyConfig = "lsk_config"
@@ -175,6 +176,7 @@ const OctoprintStatus = () => {
 
   return (
     <>
+      <Helmet title="Octostatus" defer={false} />
       <div>
         <div>
           <label>
