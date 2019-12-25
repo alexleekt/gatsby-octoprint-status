@@ -15,6 +15,8 @@
     "lint": "eslint --ignore-path .gitignore . --ext ts --ext tsx --ext js --ext jsx"
   },
   "dependencies": {
+    "@material-ui/core": "^4.8.0",
+    "@material-ui/icons": "^4.5.1",
     "axios": "^0.19.0",
     "gatsby": "^2.18.8",
     "gatsby-plugin-offline": "^3.0.30",
@@ -26,7 +28,9 @@
     "react-helmet": "^5.2.1",
     "react-moment": "^0.9.7",
     "store2": "^2.10.0",
-    "url-parse": "^1.4.7"
+    "url-parse": "^1.4.7",
+    "url-regex": "^5.0.0",
+    "use-debounce": "^3.3.0"
   },
   "devDependencies": {
     "@types/node": "^12.12.21",
