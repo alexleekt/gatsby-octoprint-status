@@ -53,11 +53,9 @@ export const OctostatusConfigForm = (props: Props) => {
         />
         <TextField
           label="API Key"
-          required
           variant="outlined"
           fullWidth
           margin="dense"
-          error={config.apiKey.length <= 0}
           onChange={e => {
             setConfig({
               ...config,
