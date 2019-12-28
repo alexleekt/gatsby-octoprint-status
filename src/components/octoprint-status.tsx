@@ -144,7 +144,9 @@ const OctoprintStatus = (props: Props) => {
           <img
             style={{ width: "100%" }}
             src={fixSnapshotUrl(state.settings?.webcam?.snapshotUrl || "", props.config.server)}
-            className={`rounded-corners ${state.settings?.webcam?.flipH ? "flip-horizontal" : ""} ${state.settings?.webcam?.flipV ? "flip-vertical" : ""}`}
+            className={`rounded-corners ${state.settings?.webcam?.flipH ? "flip-horizontal" : ""} ${state.settings?.webcam?.flipV ? "flip-vertical" : ""} ${
+              state.settings?.webcam?.flipH && state.settings?.webcam?.flipV ? "flip-horizontal-vertical" : ""
+            }`}
           />
           {state.job?.progress.printTimeOrigin !== null ? (
             <>
