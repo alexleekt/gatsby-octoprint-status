@@ -2,11 +2,13 @@ import React, { useState, useEffect } from "react"
 import Moment from "react-moment"
 import "./styles.css"
 import Parse from "url-parse"
-import { Typography, Theme, createStyles, makeStyles, Card, CardContent, CardHeader, IconButton, CardActions } from "@material-ui/core"
+import { Typography, Card, CardContent, CardHeader, IconButton, CardActions, CircularProgress } from "@material-ui/core"
 import Get from "../utils/octoprint-rest-api"
 import { Config } from "./octostatus-config"
 import RefreshIcon from "@material-ui/icons/Refresh"
 import Timer from "react-compound-timer"
+import Img, { ImgProps } from "react-image"
+import posed from "react-pose"
 
 type Printer = {
   // http://docs.octoprint.org/en/master/api/datamodel.html#printer-related
@@ -93,6 +95,11 @@ const OctoprintStatus = (props: Props) => {
     }
   }
 
+  const DisplayBox = posed.div({
+    visible: { display: "block" },
+    hidden: { display: "none" },
+  })
+
   const ErrorContent = () => {
     return (
       <>
@@ -106,12 +113,38 @@ const OctoprintStatus = (props: Props) => {
         />
         <CardContent>
           <Typography>Check server and API settings.</Typography>
+
+          <Timer
+            initialTime={30000}
+            direction="backward"
+            checkpoints={[
+              {
+                time: 0,
+                callback: () => requestUpdate(),
+              },
+            ]}
+          >
+            {() => (
+              <>
+                <Typography>
+                  Retry in <Timer.Seconds /> seconds.
+                </Typography>
+              </>
+            )}
+          </Timer>
         </CardContent>
       </>
     )
   }
 
   const ApiResponseContent = () => {
+    const snapshotImageAttr: ImgProps = {
+      src: fixSnapshotUrl(status.settings?.webcam?.snapshotUrl || "", props.config.server),
+      className: `rounded-corners ${status.settings?.webcam?.flipH ? "flip-horizontal" : ""} ${status.settings?.webcam?.flipV ? "flip-vertical" : ""} ${
+        status.settings?.webcam?.flipH && status.settings?.webcam?.flipV ? "flip-horizontal-vertical" : ""
+      }`,
+    }
+
     return (
       <>
         <CardHeader
@@ -124,13 +157,7 @@ const OctoprintStatus = (props: Props) => {
           }
         />
         <CardContent>
-          <img
-            style={{ width: "100%" }}
-            src={fixSnapshotUrl(status.settings?.webcam?.snapshotUrl || "", props.config.server)}
-            className={`rounded-corners ${status.settings?.webcam?.flipH ? "flip-horizontal" : ""} ${status.settings?.webcam?.flipV ? "flip-vertical" : ""} ${
-              status.settings?.webcam?.flipH && status.settings?.webcam?.flipV ? "flip-horizontal-vertical" : ""
-            }`}
-          />
+          <Img {...snapshotImageAttr} style={{ width: "100%" }} loader={<CircularProgress />} />
           {status.job?.progress.printTimeOrigin !== null ? (
             <>
               <Typography>
@@ -159,7 +186,6 @@ const OctoprintStatus = (props: Props) => {
           <Timer
             initialTime={10000}
             direction="backward"
-            onReset={() => console.log("onReset hook")}
             checkpoints={[
               {
                 time: 0,
@@ -170,7 +196,7 @@ const OctoprintStatus = (props: Props) => {
             {() => (
               <>
                 <Typography>
-                  Next update in <Timer.Seconds /> seconds
+                  Update in <Timer.Seconds /> seconds.
                 </Typography>
               </>
             )}
@@ -180,9 +206,20 @@ const OctoprintStatus = (props: Props) => {
     )
   }
 
+  const hasError = () => {
+    return status.settings == undefined || status.printer == undefined || status.job == undefined
+  }
+
   return (
     <>
-      <Card>{status.settings == undefined || status.printer == undefined || status.job == undefined ? <ErrorContent /> : <ApiResponseContent />}</Card>
+      <Card>
+        <DisplayBox pose={hasError() ? "visible" : "hidden"}>
+          <ErrorContent />
+        </DisplayBox>
+        <DisplayBox pose={!hasError() ? "visible" : "hidden"}>
+          <ApiResponseContent />
+        </DisplayBox>
+      </Card>
     </>
   )
 }
