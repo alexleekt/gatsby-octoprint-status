@@ -49,7 +49,7 @@ export const OctostatusConfigForm = (props: Props) => {
             })
           }}
           placeholder="e.g. http://octopi.local"
-          defaultValue={config.server}
+          value={config.server}
         />
         <TextField
           label="API Key"
@@ -63,7 +63,7 @@ export const OctostatusConfigForm = (props: Props) => {
             })
           }}
           placeholder="Copy from Octopi (make sure to enable CORS)"
-          defaultValue={config.apiKey}
+          value={config.apiKey}
         />
       </FormGroup>
     </form>
