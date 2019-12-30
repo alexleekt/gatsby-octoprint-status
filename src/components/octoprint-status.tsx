@@ -2,19 +2,7 @@ import React, { useState, useEffect } from "react"
 import Moment from "react-moment"
 import "./styles.css"
 import Parse from "url-parse"
-import {
-  Typography,
-  CircularProgress,
-  Backdrop,
-  Theme,
-  createStyles,
-  makeStyles,
-  Card,
-  CardContent,
-  CardHeader,
-  IconButton,
-  CardActions,
-} from "@material-ui/core"
+import { Typography, Theme, createStyles, makeStyles, Card, CardContent, CardHeader, IconButton, CardActions } from "@material-ui/core"
 import Get from "../utils/octoprint-rest-api"
 import { Config } from "./octostatus-config"
 import RefreshIcon from "@material-ui/icons/Refresh"
@@ -62,8 +50,6 @@ type Settings = {
 }
 
 type Status = {
-  isUpdating: boolean
-  updatedTs: number
   printer: Printer | undefined
   job: Job | undefined
   settings: Settings | undefined
@@ -73,38 +59,24 @@ type Props = {
   config: Config
 }
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    backdrop: {
-      zIndex: theme.zIndex.drawer + 1,
-      color: "#fff",
-    },
-  })
-)
-
 const OctoprintStatus = (props: Props) => {
-  const [state, setState] = useState<Status>({
-    isUpdating: false,
-    updatedTs: Date.now(),
+  const [status, setStatus] = useState<Status>({
     printer: undefined,
     job: undefined,
     settings: undefined,
   })
 
   const requestUpdate = async () => {
-    setState({ ...state, isUpdating: true })
     const [s, p, j] = await Promise.all([
       Get(props.config.server, props.config.apiKey, "/api/settings"),
       Get(props.config.server, props.config.apiKey, "/api/printer"),
       Get(props.config.server, props.config.apiKey, "/api/job"),
     ])
-    setState({
-      ...state,
+    setStatus({
+      ...status,
       settings: s,
       printer: p,
       job: j,
-      updatedTs: Date.now(),
-      isUpdating: false,
     })
   }
 
@@ -120,8 +92,6 @@ const OctoprintStatus = (props: Props) => {
       return "https://i.imgur.com/gStEz0r.png"
     }
   }
-
-  const classes = useStyles()
 
   const ErrorContent = () => {
     return (
@@ -145,8 +115,8 @@ const OctoprintStatus = (props: Props) => {
     return (
       <>
         <CardHeader
-          title={state.printer?.state?.text}
-          subheader={state.job?.job?.file?.display || `No Job Selected`}
+          title={status.printer?.state?.text}
+          subheader={status.job?.job?.file?.display || `No Job Selected`}
           action={
             <IconButton onClick={requestUpdate}>
               <RefreshIcon />
@@ -156,19 +126,19 @@ const OctoprintStatus = (props: Props) => {
         <CardContent>
           <img
             style={{ width: "100%" }}
-            src={fixSnapshotUrl(state.settings?.webcam?.snapshotUrl || "", props.config.server)}
-            className={`rounded-corners ${state.settings?.webcam?.flipH ? "flip-horizontal" : ""} ${state.settings?.webcam?.flipV ? "flip-vertical" : ""} ${
-              state.settings?.webcam?.flipH && state.settings?.webcam?.flipV ? "flip-horizontal-vertical" : ""
+            src={fixSnapshotUrl(status.settings?.webcam?.snapshotUrl || "", props.config.server)}
+            className={`rounded-corners ${status.settings?.webcam?.flipH ? "flip-horizontal" : ""} ${status.settings?.webcam?.flipV ? "flip-vertical" : ""} ${
+              status.settings?.webcam?.flipH && status.settings?.webcam?.flipV ? "flip-horizontal-vertical" : ""
             }`}
           />
-          {state.job?.progress.printTimeOrigin !== null ? (
+          {status.job?.progress.printTimeOrigin !== null ? (
             <>
               <Typography>
-                {Math.round(state.job?.progress?.completion || NaN)}%
-                {(state.job?.progress?.printTimeLeft || 0) > 0 ? (
+                {Math.round(status.job?.progress?.completion || NaN)}%
+                {(status.job?.progress?.printTimeLeft || 0) > 0 ? (
                   <>
                     {" ETA "}
-                    <Moment add={{ seconds: state.job?.progress?.printTimeLeft }} fromNow>
+                    <Moment add={{ seconds: status.job?.progress?.printTimeLeft }} fromNow>
                       {Date()}
                     </Moment>
                   </>
@@ -177,12 +147,12 @@ const OctoprintStatus = (props: Props) => {
             </>
           ) : null}
           <Typography>
-            tool0 {state.printer?.temperature?.tool0.actual}°C
-            {state.printer?.temperature?.tool0.target || 0 > 0 ? <>-&gt; {state.printer?.temperature.tool0.target}°C</> : null}
+            tool0 {status.printer?.temperature?.tool0.actual}°C
+            {status.printer?.temperature?.tool0.target || 0 > 0 ? <>-&gt; {status.printer?.temperature.tool0.target}°C</> : null}
           </Typography>
           <Typography>
-            bed {state.printer?.temperature?.bed.actual}°C
-            {state.printer?.temperature?.bed.target || 0 > 0 ? <>-&gt; {state.printer?.temperature.bed.target}°C</> : null}
+            bed {status.printer?.temperature?.bed.actual}°C
+            {status.printer?.temperature?.bed.target || 0 > 0 ? <>-&gt; {status.printer?.temperature.bed.target}°C</> : null}
           </Typography>
         </CardContent>
         <CardActions>
@@ -212,10 +182,7 @@ const OctoprintStatus = (props: Props) => {
 
   return (
     <>
-      <Backdrop open={state.isUpdating} className={classes.backdrop}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
-      <Card>{state.settings == undefined || state.printer == undefined || state.job == undefined ? <ErrorContent /> : <ApiResponseContent />}</Card>
+      <Card>{status.settings == undefined || status.printer == undefined || status.job == undefined ? <ErrorContent /> : <ApiResponseContent />}</Card>
     </>
   )
 }
