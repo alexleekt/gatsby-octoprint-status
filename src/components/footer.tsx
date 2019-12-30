@@ -1,8 +1,9 @@
 import React from "react"
-import { AppBar, Toolbar, Typography, Theme, makeStyles, createStyles, Container } from "@material-ui/core"
+import { AppBar, Toolbar, Typography, Theme, makeStyles, createStyles, Container, ContainerProps } from "@material-ui/core"
 
 type Footer = {
   tagline: string
+  containerProps: ContainerProps
 }
 const Footer = (props: Footer) => {
   const useStyles = makeStyles((theme: Theme) =>
@@ -17,7 +18,7 @@ const Footer = (props: Footer) => {
   return (
     <AppBar position="fixed" color="primary" className={classes.appBar}>
       <Toolbar>
-        <Container maxWidth="md">
+        <Container {...props.containerProps}>
           <Typography>{props.tagline}</Typography>
         </Container>
       </Toolbar>

@@ -1,6 +1,6 @@
 import React from "react"
 import { Helmet } from "react-helmet"
-import { Container } from "@material-ui/core"
+import { Container, ContainerProps } from "@material-ui/core"
 import Footer from "./footer"
 
 interface Props {
@@ -8,21 +8,22 @@ interface Props {
   children?: any
   title: string
   tagline: string
+  containerProps: ContainerProps
 }
 const Layout = (props: Props) => {
   return (
     <>
       <Helmet title={props.title} defer={false} />
       <Container
-        maxWidth="md"
+        {...props.containerProps}
         style={{
           marginTop: "16px",
-          marginBottom: "16px",
+          marginBottom: "32px",
         }}
       >
         {props.children}
       </Container>
-      <Footer tagline={props.tagline} />
+      <Footer tagline={props.tagline} containerProps={props.containerProps} />
     </>
   )
 }

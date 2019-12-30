@@ -116,7 +116,7 @@ const OctoprintStatus = (props: Props) => {
         <CardHeader
           title="Could not connect"
           action={
-            <IconButton>
+            <IconButton onClick={requestUpdate}>
               <RefreshIcon />
             </IconButton>
           }
@@ -135,7 +135,7 @@ const OctoprintStatus = (props: Props) => {
           title={state.job?.job?.file?.display || `No Job Selected`}
           subheader={state.printer?.state?.text}
           action={
-            <IconButton>
+            <IconButton onClick={requestUpdate}>
               <RefreshIcon />
             </IconButton>
           }
@@ -154,7 +154,7 @@ const OctoprintStatus = (props: Props) => {
                 {Math.round(state.job?.progress?.completion || NaN)}%
                 {(state.job?.progress?.printTimeLeft || 0) > 0 ? (
                   <>
-                    finishing in
+                    ETA{" "}
                     <Moment add={{ seconds: state.job?.progress?.printTimeLeft }} fromNow>
                       {Date()}
                     </Moment>
@@ -181,9 +181,7 @@ const OctoprintStatus = (props: Props) => {
       <Backdrop open={state.isUpdating} className={classes.backdrop}>
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Card onClick={requestUpdate}>
-        {state.settings == undefined || state.printer == undefined || state.job == undefined ? <ErrorContent /> : <ApiResponseContent />}
-      </Card>
+      <Card>{state.settings == undefined || state.printer == undefined || state.job == undefined ? <ErrorContent /> : <ApiResponseContent />}</Card>
     </>
   )
 }

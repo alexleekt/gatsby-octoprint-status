@@ -18,7 +18,7 @@ const OctostatusPage = () => {
   }
 
   return (
-    <Layout title="Octostatus" tagline="Octostatus - a lightweight octoprint status page">
+    <Layout title="Octostatus" tagline="Octostatus - a lightweight octoprint status page" containerProps={{ maxWidth: "sm" }}>
       <ConfigForm onConfigChanged={onConfigChanged} />
       {state.config ? <OctoprintStatus config={state.config} /> : null}
     </Layout>
