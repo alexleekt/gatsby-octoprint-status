@@ -2,10 +2,23 @@ import React, { useState, useEffect } from "react"
 import Moment from "react-moment"
 import "./styles.css"
 import Parse from "url-parse"
-import { Typography, CircularProgress, Backdrop, Theme, createStyles, makeStyles, Card, CardContent, CardHeader, IconButton } from "@material-ui/core"
+import {
+  Typography,
+  CircularProgress,
+  Backdrop,
+  Theme,
+  createStyles,
+  makeStyles,
+  Card,
+  CardContent,
+  CardHeader,
+  IconButton,
+  CardActions,
+} from "@material-ui/core"
 import Get from "../utils/octoprint-rest-api"
 import { Config } from "./octostatus-config"
 import RefreshIcon from "@material-ui/icons/Refresh"
+import Timer from "react-compound-timer"
 
 type Printer = {
   // http://docs.octoprint.org/en/master/api/datamodel.html#printer-related
@@ -132,8 +145,8 @@ const OctoprintStatus = (props: Props) => {
     return (
       <>
         <CardHeader
-          title={state.job?.job?.file?.display || `No Job Selected`}
-          subheader={state.printer?.state?.text}
+          title={state.printer?.state?.text}
+          subheader={state.job?.job?.file?.display || `No Job Selected`}
           action={
             <IconButton onClick={requestUpdate}>
               <RefreshIcon />
@@ -154,7 +167,7 @@ const OctoprintStatus = (props: Props) => {
                 {Math.round(state.job?.progress?.completion || NaN)}%
                 {(state.job?.progress?.printTimeLeft || 0) > 0 ? (
                   <>
-                    ETA{" "}
+                    {" ETA "}
                     <Moment add={{ seconds: state.job?.progress?.printTimeLeft }} fromNow>
                       {Date()}
                     </Moment>
@@ -172,6 +185,27 @@ const OctoprintStatus = (props: Props) => {
             {state.printer?.temperature?.bed.target || 0 > 0 ? <>-&gt; {state.printer?.temperature.bed.target}°C</> : null}
           </Typography>
         </CardContent>
+        <CardActions>
+          <Timer
+            initialTime={10000}
+            direction="backward"
+            onReset={() => console.log("onReset hook")}
+            checkpoints={[
+              {
+                time: 0,
+                callback: () => requestUpdate(),
+              },
+            ]}
+          >
+            {() => (
+              <>
+                <Typography>
+                  Next update in <Timer.Seconds /> seconds
+                </Typography>
+              </>
+            )}
+          </Timer>
+        </CardActions>
       </>
     )
   }
