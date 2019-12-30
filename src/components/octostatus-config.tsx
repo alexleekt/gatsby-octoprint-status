@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from "react"
 import store from "store2"
-import "./styles.css"
 import { FormGroup, TextField } from "@material-ui/core"
 import { useDebounce } from "use-debounce"
 import urlRegex from "url-regex"
+import queryString from "query-string"
+import objectAssignDefined from "object-assign-defined"
+import { WindowLocation as WLocation } from "@reach/router"
 
 export type Config = {
   server: string
@@ -12,16 +14,23 @@ export type Config = {
 
 type Props = {
   onConfigChanged: Function
+  location?: WLocation
+  config?: Config
 }
 export const OctostatusConfigForm = (props: Props) => {
   const debounceDuration = 1000
   const localStorageKeyConfig = "lsk_config"
 
+  const parsed = queryString.parse(props.location?.search || "") as Config
+
   const [config, setConfig] = useState<Config>(
-    store.get(localStorageKeyConfig, {
-      server: "",
-      apiKey: "",
-    })
+    objectAssignDefined(
+      store.get(localStorageKeyConfig, {
+        server: props.config?.server || "",
+        apiKey: props.config?.apiKey || "",
+      }),
+      { server: parsed.server, apiKey: parsed.apiKey }
+    )
   )
   useEffect(() => {
     store.add(localStorageKeyConfig, config)

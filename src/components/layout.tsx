@@ -18,7 +18,7 @@ const Layout = (props: Props) => {
         {...props.containerProps}
         style={{
           marginTop: "16px",
-          marginBottom: "32px",
+          marginBottom: "64px",
         }}
       >
         {props.children}
