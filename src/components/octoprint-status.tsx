@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react"
 import Moment from "react-moment"
 import "./styles.css"
 import Parse from "url-parse"
-import { Typography, Card, CardContent, CardHeader, IconButton, CardActions, CircularProgress } from "@material-ui/core"
+import { Typography, Card, CardContent, CardHeader, IconButton, CircularProgress, Badge, withStyles, Theme, createStyles } from "@material-ui/core"
 import Get from "../utils/octoprint-rest-api"
 import { Config } from "./octostatus-config"
 import RefreshIcon from "@material-ui/icons/Refresh"
@@ -103,37 +103,50 @@ const OctoprintStatus = (props: Props) => {
   const ErrorContent = () => {
     return (
       <>
-        <CardHeader
-          title="Could not connect"
-          action={
-            <IconButton onClick={requestUpdate}>
-              <RefreshIcon />
-            </IconButton>
-          }
-        />
+        <CardHeader title="Could not connect" action={<RefreshTimer duration={30000} />} />
         <CardContent>
           <Typography>Check server and API settings.</Typography>
-
-          <Timer
-            initialTime={30000}
-            direction="backward"
-            checkpoints={[
-              {
-                time: 0,
-                callback: () => requestUpdate(),
-              },
-            ]}
-          >
-            {() => (
-              <>
-                <Typography>
-                  Retry in <Timer.Seconds /> seconds.
-                </Typography>
-              </>
-            )}
-          </Timer>
         </CardContent>
       </>
+    )
+  }
+
+  const StyledBadge = withStyles((theme: Theme) =>
+    createStyles({
+      badge: {
+        right: 4,
+        top: 13,
+        border: `2px solid ${theme.palette.background.paper}`,
+        padding: "0 5px",
+      },
+    })
+  )(Badge)
+
+  type RefreshTimerProps = {
+    duration: number
+  }
+  const RefreshTimer = (props: RefreshTimerProps) => {
+    return (
+      <Timer
+        initialTime={props.duration}
+        direction="backward"
+        checkpoints={[
+          {
+            time: 0,
+            callback: () => requestUpdate(),
+          },
+        ]}
+      >
+        {() => (
+          <>
+            <StyledBadge badgeContent={<Timer.Seconds />} color="primary">
+              <IconButton onClick={requestUpdate}>
+                <RefreshIcon />
+              </IconButton>
+            </StyledBadge>
+          </>
+        )}
+      </Timer>
     )
   }
 
@@ -150,11 +163,7 @@ const OctoprintStatus = (props: Props) => {
         <CardHeader
           title={status.printer?.state?.text}
           subheader={status.job?.job?.file?.display || `No Job Selected`}
-          action={
-            <IconButton onClick={requestUpdate}>
-              <RefreshIcon />
-            </IconButton>
-          }
+          action={<RefreshTimer duration={10000} />}
         />
         <CardContent>
           <Img {...snapshotImageAttr} style={{ width: "100%" }} loader={<CircularProgress />} />
@@ -182,26 +191,6 @@ const OctoprintStatus = (props: Props) => {
             {status.printer?.temperature?.bed.target || 0 > 0 ? <>-&gt; {status.printer?.temperature.bed.target}°C</> : null}
           </Typography>
         </CardContent>
-        <CardActions>
-          <Timer
-            initialTime={10000}
-            direction="backward"
-            checkpoints={[
-              {
-                time: 0,
-                callback: () => requestUpdate(),
-              },
-            ]}
-          >
-            {() => (
-              <>
-                <Typography>
-                  Update in <Timer.Seconds /> seconds.
-                </Typography>
-              </>
-            )}
-          </Timer>
-        </CardActions>
       </>
     )
   }

@@ -41,16 +41,23 @@ export const OctostatusConfigForm = (props: Props) => {
     props.onConfigChanged(debouncedConfig)
   }, [debouncedConfig])
 
+  const validUrl = (subject: string): boolean => {
+    return urlRegex({ exact: true }).test(subject)
+  }
+
   return (
-    <form noValidate autoComplete="off">
+    <>
       <FormGroup row>
         <TextField
+          autoComplete="false"
+          autoCorrect="false"
           label="Server"
           variant="outlined"
           required
           fullWidth
           margin="dense"
-          error={!urlRegex({ exact: true }).test(config.server)}
+          error={!validUrl(config.server)}
+          helperText={!validUrl(config.server) ? "Invalid URL" : ""}
           onChange={e => {
             setConfig({
               ...config,
@@ -59,8 +66,11 @@ export const OctostatusConfigForm = (props: Props) => {
           }}
           placeholder="e.g. http://octopi.local"
           value={config.server}
+          InputLabelProps={{ shrink: config.server !== undefined }}
         />
         <TextField
+          autoComplete="false"
+          autoCorrect="false"
           label="API Key"
           variant="outlined"
           fullWidth
@@ -73,8 +83,9 @@ export const OctostatusConfigForm = (props: Props) => {
           }}
           placeholder="Copy from Octopi (make sure to enable CORS)"
           value={config.apiKey}
+          InputLabelProps={{ shrink: config.apiKey !== undefined }}
         />
       </FormGroup>
-    </form>
+    </>
   )
 }
