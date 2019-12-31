@@ -1,7 +1,7 @@
 {
   "name": "gatsby-octoprint-status",
   "private": true,
-  "description": "Octostatus - a lightweight octoprint status page",
+  "description": "A lightweight alternative way to monitor your OctoPrint server.",
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {

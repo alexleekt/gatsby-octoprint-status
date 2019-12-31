@@ -37,7 +37,12 @@ const OctostatusPage = (props: any) => {
   }
 
   return (
-    <Layout title="Octostatus" tagline="Octostatus - a lightweight octoprint status page" containerProps={{ maxWidth: "sm" }}>
+    <Layout
+      title="Octostatus"
+      tagline="Monitor your OctoPrint"
+      readmeUrl="https://github.com/alexleekt/gatsby-octoprint-status/blob/master/README.md"
+      containerProps={{ maxWidth: "sm" }}
+    >
       <ConfigForm onConfigChanged={onConfigChanged} location={props.location} />
       <Permalink />
       <div style={{ height: "8px" }}></div>

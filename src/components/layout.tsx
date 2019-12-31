@@ -9,6 +9,7 @@ interface Props {
   title: string
   tagline: string
   containerProps: ContainerProps
+  readmeUrl: string
 }
 const Layout = (props: Props) => {
   return (
@@ -23,7 +24,7 @@ const Layout = (props: Props) => {
       >
         {props.children}
       </Container>
-      <Footer tagline={props.tagline} containerProps={props.containerProps} />
+      <Footer tagline={props.tagline} containerProps={props.containerProps} readmeUrl={props.readmeUrl} />
     </>
   )
 }
