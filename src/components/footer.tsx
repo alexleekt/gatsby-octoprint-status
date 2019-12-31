@@ -1,19 +1,29 @@
+import {
+  AppBar,
+  Container,
+  ContainerProps,
+  createStyles,
+  Grid,
+  Link,
+  makeStyles,
+  Toolbar,
+  Typography,
+} from "@material-ui/core"
 import React from "react"
-import { AppBar, Toolbar, Typography, Theme, makeStyles, createStyles, Container, ContainerProps, Grid, Link } from "@material-ui/core"
 
 type Footer = {
-  tagline: string
   containerProps: ContainerProps
   readmeUrl: string
+  tagline: string
 }
 const Footer = (props: Footer) => {
-  const useStyles = makeStyles((theme: Theme) =>
+  const useStyles = makeStyles(() =>
     createStyles({
       appBar: {
         top: "auto",
         bottom: 0,
       },
-    })
+    }),
   )
   const classes = useStyles()
   return (

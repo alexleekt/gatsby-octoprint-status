@@ -1,15 +1,15 @@
+import { Container, ContainerProps } from "@material-ui/core"
 import React from "react"
 import { Helmet } from "react-helmet"
-import { Container, ContainerProps } from "@material-ui/core"
 import Footer from "./footer"
 
 interface Props {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   children?: any
-  title: string
-  tagline: string
   containerProps: ContainerProps
   readmeUrl: string
+  tagline: string
+  title: string
 }
 const Layout = (props: Props) => {
   return (

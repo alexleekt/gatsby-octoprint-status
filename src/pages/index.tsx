@@ -1,10 +1,9 @@
-import React, { useState } from "react"
-
-import Layout from "../components/layout"
-import { Config, OctostatusConfigForm as ConfigForm } from "../components/octostatus-config"
-import OctoprintStatus from "../components/octoprint-status"
-import LinkIcon from "@material-ui/icons/Link"
 import { Typography, Grid } from "@material-ui/core"
+import LinkIcon from "@material-ui/icons/Link"
+import React, { useState } from "react"
+import Layout from "../components/layout"
+import OctoprintStatus from "../components/octoprint-status"
+import { Config, OctostatusConfigForm as ConfigForm } from "../components/octostatus-config"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const OctostatusPage = (props: any) => {
@@ -22,7 +21,8 @@ const OctostatusPage = (props: any) => {
 
   const Permalink = () => {
     const href = (): string => {
-      return `${props.location?.origin}${props.location?.pathname}?server=${state.config?.server || ""}&apiKey=${state.config?.apiKey || ""}`
+      return `${props.location?.origin}${props.location?.pathname}?server=${state.config?.server || ""}&apiKey=${state
+        .config?.apiKey || ""}`
     }
 
     return (

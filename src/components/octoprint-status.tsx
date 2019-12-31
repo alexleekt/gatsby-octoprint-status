@@ -1,14 +1,25 @@
-import React, { useState, useEffect } from "react"
-import Moment from "react-moment"
 import "./styles.css"
-import Parse from "url-parse"
-import { Typography, Card, CardContent, CardHeader, IconButton, CircularProgress, Badge, withStyles, Theme, createStyles } from "@material-ui/core"
-import Get from "../utils/octoprint-rest-api"
-import { Config } from "./octostatus-config"
+import {
+  Badge,
+  Card,
+  CardContent,
+  CardHeader,
+  CircularProgress,
+  createStyles,
+  IconButton,
+  Theme,
+  Typography,
+  withStyles,
+} from "@material-ui/core"
 import RefreshIcon from "@material-ui/icons/Refresh"
+import React, { useState, useEffect } from "react"
 import Timer from "react-compound-timer"
 import Img, { ImgProps } from "react-image"
+import Moment from "react-moment"
 import posed from "react-pose"
+import Parse from "url-parse"
+import Get from "../utils/octoprint-rest-api"
+import { Config } from "./octostatus-config"
 
 type Printer = {
   // http://docs.octoprint.org/en/master/api/datamodel.html#printer-related
@@ -16,11 +27,11 @@ type Printer = {
     text: string
   }
   temperature: {
-    tool0: {
+    bed: {
       actual: number
       target: number
     }
-    bed: {
+    tool0: {
       actual: number
       target: number
     }
@@ -52,8 +63,8 @@ type Settings = {
 }
 
 type Status = {
-  printer: Printer | undefined
   job: Job | undefined
+  printer: Printer | undefined
   settings: Settings | undefined
 }
 
@@ -89,7 +100,9 @@ const OctoprintStatus = (props: Props) => {
   const fixSnapshotUrl = (snapshotUrl: string, server: string): string => {
     try {
       const url = Parse(server)
-      return `${snapshotUrl}&timestamp=${new Date().getTime()}`.replace("127.0.0.1", url.host).replace("localhost", url.host)
+      return `${snapshotUrl}&timestamp=${new Date().getTime()}`
+        .replace("127.0.0.1", url.host)
+        .replace("localhost", url.host)
     } catch (error) {
       return "https://i.imgur.com/gStEz0r.png"
     }
@@ -119,7 +132,7 @@ const OctoprintStatus = (props: Props) => {
         border: `2px solid ${theme.palette.background.paper}`,
         padding: "0 5px",
       },
-    })
+    }),
   )(Badge)
 
   type RefreshTimerProps = {
@@ -153,9 +166,9 @@ const OctoprintStatus = (props: Props) => {
   const ApiResponseContent = () => {
     const snapshotImageAttr: ImgProps = {
       src: fixSnapshotUrl(status.settings?.webcam?.snapshotUrl || "", props.config.server),
-      className: `rounded-corners ${status.settings?.webcam?.flipH ? "flip-horizontal" : ""} ${status.settings?.webcam?.flipV ? "flip-vertical" : ""} ${
-        status.settings?.webcam?.flipH && status.settings?.webcam?.flipV ? "flip-horizontal-vertical" : ""
-      }`,
+      className: `rounded-corners ${status.settings?.webcam?.flipH ? "flip-horizontal" : ""} ${
+        status.settings?.webcam?.flipV ? "flip-vertical" : ""
+      } ${status.settings?.webcam?.flipH && status.settings?.webcam?.flipV ? "flip-horizontal-vertical" : ""}`,
     }
 
     return (
@@ -184,11 +197,15 @@ const OctoprintStatus = (props: Props) => {
           ) : null}
           <Typography>
             tool0 {status.printer?.temperature?.tool0.actual}°C
-            {status.printer?.temperature?.tool0.target || 0 > 0 ? <>-&gt; {status.printer?.temperature.tool0.target}°C</> : null}
+            {status.printer?.temperature?.tool0.target || 0 > 0 ? (
+              <>-&gt; {status.printer?.temperature.tool0.target}°C</>
+            ) : null}
           </Typography>
           <Typography>
             bed {status.printer?.temperature?.bed.actual}°C
-            {status.printer?.temperature?.bed.target || 0 > 0 ? <>-&gt; {status.printer?.temperature.bed.target}°C</> : null}
+            {status.printer?.temperature?.bed.target || 0 > 0 ? (
+              <>-&gt; {status.printer?.temperature.bed.target}°C</>
+            ) : null}
           </Typography>
         </CardContent>
       </>

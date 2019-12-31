@@ -15,7 +15,7 @@ http://octostatus.wafflepanda.com
 ### How?
 
 1. On your OctoPrint server, copy your API key and ensure ☑ Allow Cross Origin Resource Sharing (CORS) is <u>checked</u>. Restart your OctoPrint server if necessary.
-   `⚙ Settings > API  `
+   `⚙ Settings > API`
 
 2. Navigate to http://octostatus.wafflepanda.com
 
@@ -27,11 +27,11 @@ http://octostatus.wafflepanda.com
 
 ### Known Issues
 
-- *Could not connect - Check server and API settings*
+- _Could not connect - Check server and API settings_
 
-  This app does not magically resolve network issues. If you cannot reach your the regular OctoPrint interface, then you will need to 
+  This app does not magically resolve network issues. If you cannot reach your the regular OctoPrint interface, then you will need to
 
-- *http mixed content error*
+- _http mixed content error_
 
   If you somehow end up hosting this yourself or accessing it via HTTPS, you will need to find your own way to serve OctoPrint API over https as well.
 

@@ -1,26 +1,24 @@
+import { FormGroup, TextField } from "@material-ui/core"
+import { WindowLocation as WLocation } from "@reach/router"
+import objectAssignDefined from "object-assign-defined"
+// eslint-disable-next-line import/default
+import queryString from "query-string"
 import React, { useState, useEffect } from "react"
 import store from "store2"
-import { FormGroup, TextField } from "@material-ui/core"
-import { useDebounce } from "use-debounce"
+// eslint-disable-next-line import/default
 import urlRegex from "url-regex"
-import queryString from "query-string"
-import objectAssignDefined from "object-assign-defined"
-import { WindowLocation as WLocation } from "@reach/router"
-
-export type Config = {
-  server: string
-  apiKey: string
-}
+import { useDebounce } from "use-debounce"
 
 type Props = {
-  onConfigChanged: Function
-  location?: WLocation
   config?: Config
+  location?: WLocation
+  onConfigChanged: Function
 }
 export const OctostatusConfigForm = (props: Props) => {
   const debounceDuration = 1000
   const localStorageKeyConfig = "lsk_config"
 
+  // eslint-disable-next-line import/no-named-as-default-member
   const parsed = queryString.parse(props.location?.search || "") as Config
 
   const [config, setConfig] = useState<Config>(
@@ -29,8 +27,8 @@ export const OctostatusConfigForm = (props: Props) => {
         server: props.config?.server || "",
         apiKey: props.config?.apiKey || "",
       }),
-      { server: parsed.server, apiKey: parsed.apiKey }
-    )
+      { server: parsed.server, apiKey: parsed.apiKey },
+    ),
   )
   useEffect(() => {
     store.add(localStorageKeyConfig, config)
@@ -88,4 +86,9 @@ export const OctostatusConfigForm = (props: Props) => {
       </FormGroup>
     </>
   )
+}
+
+export type Config = {
+  apiKey: string
+  server: string
 }
