@@ -1,5 +1,7 @@
 # Octostatus 🐙
 
+![Screenshot](https://i.imgur.com/4ABMfBP.jpg)
+
 ### What?
 
 A lightweight alternative way to monitor your [OctoPrint](https://octoprint.org/) server. I built this React client-side single page webapp to make HTTP API calls to your OctoPrint server directly. Under the hood, it uses Gatsby.js
