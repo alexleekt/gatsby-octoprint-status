@@ -10,6 +10,7 @@ import {
   Theme,
   Typography,
   withStyles,
+  CardActions,
 } from "@material-ui/core"
 import RefreshIcon from "@material-ui/icons/Refresh"
 import React, { useState, useEffect } from "react"
@@ -116,10 +117,13 @@ const OctoprintStatus = (props: Props) => {
   const ErrorContent = () => {
     return (
       <>
-        <CardHeader title="Could not connect" action={<RefreshTimer duration={30000} />} />
+        <CardHeader title="Could not connect" />
         <CardContent>
           <Typography>Check server and API settings.</Typography>
         </CardContent>
+        <CardActions>
+          <RefreshTimer duration={30000} />
+        </CardActions>
       </>
     )
   }
@@ -176,7 +180,6 @@ const OctoprintStatus = (props: Props) => {
         <CardHeader
           title={status.printer?.state?.text}
           subheader={status.job?.job?.file?.display || `No Job Selected`}
-          action={<RefreshTimer duration={10000} />}
         />
         <CardContent>
           <Img {...snapshotImageAttr} style={{ width: "100%" }} loader={<CircularProgress />} />
@@ -208,6 +211,9 @@ const OctoprintStatus = (props: Props) => {
             ) : null}
           </Typography>
         </CardContent>
+        <CardActions>
+          <RefreshTimer duration={10000} />
+        </CardActions>
       </>
     )
   }

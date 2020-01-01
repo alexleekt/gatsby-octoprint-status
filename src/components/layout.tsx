@@ -1,4 +1,4 @@
-import { Container, ContainerProps } from "@material-ui/core"
+import { Container, ContainerProps, CssBaseline } from "@material-ui/core"
 import React from "react"
 import { Helmet } from "react-helmet"
 import Footer from "./footer"
@@ -14,6 +14,7 @@ interface Props {
 const Layout = (props: Props) => {
   return (
     <>
+      <CssBaseline />
       <Helmet title={props.title} defer={false} />
       <Container
         {...props.containerProps}
