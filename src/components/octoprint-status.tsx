@@ -4,7 +4,6 @@ import {
   Card,
   CardContent,
   CardHeader,
-  CircularProgress,
   createStyles,
   IconButton,
   Theme,
@@ -15,7 +14,6 @@ import {
 import RefreshIcon from "@material-ui/icons/Refresh"
 import React, { useState, useEffect } from "react"
 import Timer from "react-compound-timer"
-import Img, { ImgProps } from "react-image"
 import Moment from "react-moment"
 import posed from "react-pose"
 import Parse from "url-parse"
@@ -168,11 +166,14 @@ const OctoprintStatus = (props: Props) => {
   }
 
   const ApiResponseContent = () => {
-    const snapshotImageAttr: ImgProps = {
+    const webcamSnapshotAttr: any = {
       src: fixSnapshotUrl(status.settings?.webcam?.snapshotUrl || "", props.config.server),
       className: `rounded-corners ${status.settings?.webcam?.flipH ? "flip-horizontal" : ""} ${
         status.settings?.webcam?.flipV ? "flip-vertical" : ""
       } ${status.settings?.webcam?.flipH && status.settings?.webcam?.flipV ? "flip-horizontal-vertical" : ""}`,
+    }
+    const WebcamImage = () => {
+      return <img {...webcamSnapshotAttr} style={{ width: "100%" }} />
     }
 
     return (
@@ -182,7 +183,7 @@ const OctoprintStatus = (props: Props) => {
           subheader={status.job?.job?.file?.display || `No Job Selected`}
         />
         <CardContent>
-          <Img {...snapshotImageAttr} style={{ width: "100%" }} loader={<CircularProgress />} />
+          <WebcamImage />
           {status.job?.progress.printTimeOrigin !== null ? (
             <>
               <Typography>
