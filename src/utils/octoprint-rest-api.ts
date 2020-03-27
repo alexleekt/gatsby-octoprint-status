@@ -5,11 +5,10 @@ const Get = async (server: string, apiKey: string, path: string) => {
     const response = await Axios.get(`${server}${path}`, {
       method: "get",
       timeout: 5000,
-      headers: {},
+      headers: {
+        "x-api-key": apiKey || ""
+      },
     })
-    if (apiKey !== "") {
-      response["headers"]["x-api-key"] = apiKey
-    }
     if (response.headers["content-type"] === "application/json") {
       return response.data
     } else {
