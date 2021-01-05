@@ -17,7 +17,7 @@
   "dependencies": {
     "@material-ui/core": "^4.9.10",
     "@material-ui/icons": "^4.9.1",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "gatsby": "^2.20.23",
     "gatsby-plugin-react-helmet": "^3.2.3",
     "gatsby-plugin-typescript": "^2.3.2",
